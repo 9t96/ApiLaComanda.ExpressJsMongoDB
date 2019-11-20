@@ -6,6 +6,7 @@ const RolesMW = require('./Middlewares/roleauthorizationMW');
 var jwt = require('jsonwebtoken');
 //
 router.get('/traermesaslive',RolesMW.VerificarEmpleado,TraerMesasLive);
+router.get('/traermesasdisponibles', RolesMW.VerificarMozo,TraerMesasDisponibles);
 router.get('/mesawating',RolesMW.VerificarMozo,MesaEsperando); 
 router.get('/mesacomiendo',RolesMW.VerificarEmpleado,MesaComiendo);
 router.get('/mesapagando',RolesMW.VerificarEmpleado,MesaPagando);
@@ -22,6 +23,16 @@ router.get('/max&minfacturas',MaxMinFacturas);
   function TraerMesasLive(req,res,next)
   {
     MesasLiveModel.find()
+    .then(records => {
+      res.status(200).send(records);
+    })
+    .catch(err => {
+      res.status(204).send({message:err});
+    })
+  }
+
+  function TraerMesasDisponibles(req,res,next){
+    MesasLiveModel.find({estado:4})
     .then(records => {
       res.status(200).send(records);
     })

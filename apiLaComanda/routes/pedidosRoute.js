@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const PedidosModel = require('../src/models/pedidoenvivo')
+const PedidosEnVivoModel = require('../src/models/pedidoenvivo');
+const RolesMW = require('./Middlewares/roleauthorizationMW');
 //------------------------AGREGAR PEDIDOS----------------
 //mwmesaabrirmesa y authmozo
 router.post('/nuevopedido',NuevoPedido);
@@ -37,11 +38,51 @@ router.post('/sumarvendido',SumarVendido);
   //autheuser
   router.get('/cancelarpedido',CancelarPedido);
 
-  function NuevoPedido(req,res,next){}
+  function NuevoPedido(req,res,next){
+    if(req.body){
+      console.log(req.body);
+      var platos  = [];
+      req.body.platos.forEach(element => {
+        platos.push(element);
+      });
+      const newPedidosModel = new PedidosEnVivoModel({
+        nro_mesa: req.body.mesa,
+        mozo: req.body.mozo,
+        comensales: req.body.comensales,
+        cliente: req.body.cliente,
+        pedidos: platos,
+        total: req.body.total 
+      })
+
+      newPedidosModel.save()
+      .then( doc => {
+        res.status(200).send(doc);
+      })
+      .catch(err =>{
+        res.status(200).send({message:err});
+      })
+    }
+    else{
+      res.status(404).send({message: "Empty request"});
+    }
+  }
 
   function SumarVendido(req,res,next){}
 
-  function TraerPedidos(req,res,next){}
+  function TraerPedidos(req,res,next){
+    PedidosEnVivoModel.find()
+    .then(doc =>{
+      if(doc.length != 0){
+        res.status(200).send(doc);
+      }
+      else{
+        res.status(200).send({message:"Nada para mostrar"})
+      }
+    })
+    .catch(err =>{
+      res.status(400).send({message: err});
+    })
+  }
 
   function TraerPedidosCerveza(req,res,next){}
 

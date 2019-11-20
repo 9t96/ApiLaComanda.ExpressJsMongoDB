@@ -2,7 +2,6 @@ let mongoose = require('mongoose')
 mongoose.set('debug', true);let pedidosenvivoSchema = new mongoose.Schema({
     nro_mesa: Number,
     mozo: Number,
-    hora_pedido: Date.now(),
     estado: Number,
     id: Number,
     cliente: String,

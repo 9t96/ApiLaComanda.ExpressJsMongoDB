@@ -9,6 +9,7 @@ var usersRouter = require('./routes/users');
 var adminRouter = require('./routes/adminRoute');
 var mesasRouter = require('./routes/mesasRoute');
 var encuestasRouter = require('./routes/encuestasRoute');
+var pedidosRouter = require('./routes/pedidosRoute');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use('/publico', usersRouter);
 app.use('/admin', adminRouter);
 app.use('/mesas',mesasRouter);
 app.use('/encuestas',encuestasRouter);
+app.use('/pedidos',pedidosRouter);
 
 
 
