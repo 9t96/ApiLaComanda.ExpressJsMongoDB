@@ -12,17 +12,15 @@ router.post('/registro',NuevoUsuario);
 router.post('/seguimiento',SeguirUsuario);
 router.post('/cerrarseguimiento',CerrarSeguimiento);
 
-
 function Logear(req,res,next){
+  console.log(req.body.user + req.body.pass);
   if (req.body.user && req.body.pass) {
-    let us = req.body.user;
-    let ps = req.body.pass;
-    UsersModel.findOne({user: us,pass: pas})
+    UsersModel.findOne({user: req.body.user,pass: req.body.pass})
     .then(doc =>{
+      console.log(doc);
       if(doc.length !== 0)
       {
         if (doc.estado == 1) {
-          
           let payloadData = {
             cod_emp: doc.cod_emp,
             tipo_usuario: doc.tipo_usuario,
@@ -39,14 +37,17 @@ function Logear(req,res,next){
           res.status(200).send(datita);
         }
         else
-          res.status(200).send({message:'Usuario bloqueado.'});
+          res.status(200).send({message:'User banned', error:"banned"});
       }
       else
-        res.status(200).send({message:'Invalid pass or user.'});   
+        res.status(200).send({message:'Invalid pass or user.', error:"wrong credentials"});   
     })
     .catch(err=>{
       res.status(400).send({message:err});
     })
+  } 
+  else{
+    res.status(404).send({message:"No credentials was found on the request", error:"empty credentials"})
   }
 }
 
