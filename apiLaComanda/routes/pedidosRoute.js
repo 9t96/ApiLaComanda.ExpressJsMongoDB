@@ -43,6 +43,8 @@ router.post('/sumarvendido',SumarVendido);
       console.log(req.body);
       var platos  = [];
       req.body.platos.forEach(element => {
+        element.estado = 0;
+        element.demora = 0;
         platos.push(element);
       });
       const newPedidosModel = new PedidosEnVivoModel({
@@ -51,7 +53,8 @@ router.post('/sumarvendido',SumarVendido);
         comensales: req.body.comensales,
         cliente: req.body.cliente,
         pedidos: platos,
-        total: req.body.total 
+        total: req.body.total,
+        idPedido: req.body.idPedido
       })
 
       newPedidosModel.save()
