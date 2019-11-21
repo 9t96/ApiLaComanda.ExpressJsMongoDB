@@ -29,6 +29,9 @@ exports.VerificarEmpleado = (req,res,next) =>{
         case 3:
           next();
           break;
+        case 4:
+            next();
+            break;
         default:
           res.status(200).send({message:"Solo empleados."})
           break;
