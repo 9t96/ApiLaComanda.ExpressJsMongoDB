@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const PedidosEnVivoModel = require('../src/models/pedidoenvivo');
+const PlatosModel = require('../src/models/platos');
 const RolesMW = require('./Middlewares/roleauthorizationMW');
 //------------------------AGREGAR PEDIDOS----------------
 //mwmesaabrirmesa y authmozo
@@ -34,9 +35,9 @@ router.post('/sumarvendido',SumarVendido);
   //authadmin
   router.get('/statsplatos',TraerStatPlatos);
   //autheadmin
-  router.get('/removerpedido',RemoverPedido);
+  router.post('/removerpedido',RemoverPedido);
   //autheuser
-  router.get('/cancelarpedido',CancelarPedido);
+  router.post('/cancelarpedido',CancelarPedido);
 
   function NuevoPedido(req,res,next){
     if(req.body){
@@ -214,6 +215,7 @@ router.post('/sumarvendido',SumarVendido);
     
   }
 
+  //Trae todos los pedidos de X mesa.
   function PedidosParaCuenta(req,res,next){}
 
   function PreparandoPedido(req,res,next){
@@ -273,9 +275,49 @@ router.post('/sumarvendido',SumarVendido);
     })
   }
 
-  function TraerStatPlatos(req,res,next){}
+  //De la tabla platos trae todo
+  function TraerStatPlatos(req,res,next){
+    PlatosModel.find().sort({"cod_plato": 1})
+    .then(doc =>{
+      if(doc.length != 0){
+        res.status(200).send(doc);
+      }
+      else
+        res.status(200).send({message: "Nada para mostrar"});
+    })
+    .catch(err =>{
+      res.status(400).send({message:err});
+    })
+  }
 
-  function RemoverPedido(req,res,next){}
-
-  function CancelarPedido(req,res,next){}
+  //elimina los pedidos luego de cerra operaciones. Se deberia eliminar el documento
+  function RemoverPedido(req,res,next){
+    PedidosEnVivoModel.deleteOne({"idPedido": req.body.idPedido})
+    .then( doc =>{
+      if (doc.deletedCount == 1) {
+        res.status(200).send({message: "Se elimino el pedido con exito"});
+      } else {
+        res.status(200).send({message: "Error al eliminar"});
+      }  
+    })
+    .catch(err=>{
+      res.status(400).send({message:err});
+    })
+  }
+  //Cancelar pedido por usuario segund id y cod_plato
+  function CancelarPedido(req,res,next){
+    PedidosEnVivoModel.updateOne({"idPedido": req.body.idPedido, "pedidos.cod_plato": req.body.cod_plato},
+    {$unset: {"pedidos.$":""}})
+    .then(doc =>{
+      if (doc.nModified == 1) {
+        res.status(200).send({message: "Se cancelo existosamente el pedido"});
+        
+      } else {
+        res.status(200).send({message: "Error al modifcar pedido."});
+      }
+    })
+    .catch(err =>{
+      res.status(400).send({message: err});
+    })
+  }
   module.exports = router;
