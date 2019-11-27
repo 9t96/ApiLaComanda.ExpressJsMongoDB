@@ -20,17 +20,17 @@ router.post('/sumarvendido',SumarVendido);
   //authempleadolinea
   router.get('/traerpedidospostre',TraerPedidosPostre);
   //authuser
-  router.post('/traerpedidosxid',TraerPedidosPorID);
+  router.get('/traerpedidosxid',TraerPedidosPorID);
   //authadmin
   router.get('/pedidosparacuenta',PedidosParaCuenta);
   
   //------------------------ESTADO DE PEDIDOS----------------
   //authempleado
-  router.get('/preparando',PreparandoPedido);
+  router.post('/preparando',PreparandoPedido);
   //authempleadolinea sumar operacion
-  router.get('/listoparaservir',ListoParaServir);
+  router.post('/listoparaservir',ListoParaServir);
   //authempleadolinea sumar operacion
-  router.get('/clientescomiendo',ClientesComiendo);
+  router.post('/clientescomiendo',ClientesComiendo);
   //authadmin
   router.get('/statsplatos',TraerStatPlatos);
   //autheadmin
@@ -216,11 +216,62 @@ router.post('/sumarvendido',SumarVendido);
 
   function PedidosParaCuenta(req,res,next){}
 
-  function PreparandoPedido(req,res,next){}
+  function PreparandoPedido(req,res,next){
+    PedidosEnVivoModel.updateOne({ "idPedido": req.body.idPedido, "pedidos.cod_plato": req.body.cod_plato},
+     {//El $ refiere al elemento que macheo la cond. Si no updatearia varios registros.
+      $set: { "pedidos.$.estado": 1}
+    })
+    .then( doc =>{
+      if(doc.nModified == 1){
+        console.log(doc);
+        res.status(200).send({message: "El estado fue cambiado a 'En preparacion'"});
+      }
+      else{
+        res.status(200).send({message: "Error al modificar"});
+      }
+    })
+    .catch( err=>{
+      res.status(400).send({message: err});
+    })
+  }
 
-  function ListoParaServir(req,res,next){}
+  function ListoParaServir(req,res,next){
+    PedidosEnVivoModel.updateOne({ "idPedido": req.body.idPedido, "pedidos.cod_plato": req.body.cod_plato},
+     {//El $ refiere al elemento que macheo la cond. Si no updatearia varios registros.
+      $set: { "pedidos.$.estado": 2}
+    })
+    .then( doc =>{
+      if(doc.nModified == 1){
+        console.log(doc);
+        res.status(200).send({message: "El estado fue cambiado a 'Listo para servir'"});
+      }
+      else{
+        res.status(200).send({message: "Error al modificar"});
+      }
+    })
+    .catch( err=>{
+      res.status(400).send({message: err});
+    })
+  }
 
-  function ClientesComiendo(req,res,next){}
+  function ClientesComiendo(req,res,next){
+    PedidosEnVivoModel.updateOne({ "idPedido": req.body.idPedido, "pedidos.cod_plato": req.body.cod_plato},
+     {//El $ refiere al elemento que macheo la cond. Si no updatearia varios registros.
+      $set: { "pedidos.$.estado": 2}
+    })
+    .then( doc =>{
+      if(doc.nModified == 3){
+        console.log(doc);
+        res.status(200).send({message: "El estado fue cambiado a listo para servir"});
+      }
+      else{
+        res.status(200).send({message: "Error al modificar"});
+      }
+    })
+    .catch( err=>{
+      res.status(400).send({message: err});
+    })
+  }
 
   function TraerStatPlatos(req,res,next){}
 
