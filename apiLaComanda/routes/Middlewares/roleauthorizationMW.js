@@ -23,14 +23,23 @@ exports.VerificarEmpleado = (req,res,next) =>{
     let payload = jwt.verify(token,process.env.SECRET_KEY);
     if (payload) {
       switch (payload.data.rol) {
-        case 2:
-         next(); 
-          break;
-        case 3:
+        case 4:
           next();
           break;
-        case 4:
+        case 5:
             next();
+            break;
+        case 6:
+            next();
+            break;
+        case 7:
+            next();
+            break;
+        case 8:
+            next();
+            break;
+        case 10:
+            next(); 
             break;
         default:
           res.status(200).send({message:"Solo empleados."})
@@ -51,7 +60,7 @@ exports.VerificarAdmin = (req,res,next) =>{
     let payload = jwt.verify(token,process.env.SECRET_KEY);
     if (payload) {
       switch (payload.data.rol) {
-        case 3:
+        case 10:
           next();
           break;
         default:

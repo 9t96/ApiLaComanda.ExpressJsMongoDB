@@ -66,6 +66,7 @@ function AltaEncuesta(req,res,next)
     }
   }
 
+
   function TraerBuenosCometarios(req,res,next)
   {
     EncuestaModel.aggregate([
@@ -75,7 +76,7 @@ function AltaEncuesta(req,res,next)
     mozoScore:1,
     mesaScore:1,
     comidaScore:1,
-    restoScore:1, 
+    restoScore:1, //Trae todas las columnas y devuelve los que tengan promedio mayor a 7 y que matcheen la condicion.
     promedio:{$gte:[{$avg:["$mozoScore","$mesaScore","$restoScore","$comidaScore"]},7]}
   }},{$match:{ promedio:true}}])
     .then(doc=>{

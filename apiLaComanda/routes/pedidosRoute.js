@@ -20,7 +20,7 @@ router.post('/sumarvendido',SumarVendido);
   //authempleadolinea
   router.get('/traerpedidospostre',TraerPedidosPostre);
   //authuser
-  router.get('/traerpedidosxid',TraerPedidosPorID);
+  router.post('/traerpedidosxid',TraerPedidosPorID);
   //authadmin
   router.get('/pedidosparacuenta',PedidosParaCuenta);
   
@@ -87,15 +87,132 @@ router.post('/sumarvendido',SumarVendido);
     })
   }
 
-  function TraerPedidosCerveza(req,res,next){}
+  function TraerPedidosCerveza(req,res,next){
+    PedidosEnVivoModel.aggregate([{$match: {"pedidos.cod_plato": { $gte: 100, $lte: 103 }}},
+    {$unwind: "$pedidos"},
+    {$project: {
+       "idPedido": 1,
+       "nro_mesa": 1,
+       "cliente": 1,
+       "pedidos.cod_plato": 1,
+       "pedidos.cantidad": 1,
+       "pedidos.estado": 1
+    }
+    }])
+    .then( doc =>{
+      if (doc.length != 0 ) {
+        console.log(doc);
+        res.status(200).send(doc);
+      } else {
+        res.status(200).send({message:"Nada para mostrar"});
+      }
+    })
+    .catch( err=>{
+      console.log(err)
+      res.status(400).send({message: err});
+    })
+  }
 
-  function TraerPedidosBarra(req,res,next){}
+  function TraerPedidosBarra(req,res,next){
+    PedidosEnVivoModel.aggregate([{$match: {"pedidos.cod_plato": { $gte: 200, $lte: 205 }}},
+    {$unwind: "$pedidos"},
+    {$project: {
+       "idPedido": 1,
+       "nro_mesa": 1,
+       "cliente": 1,
+       "pedidos.cod_plato": 1,
+       "pedidos.cantidad": 1,
+       "pedidos.estado": 1
+    }
+    }])
+    .then( doc =>{
+      if (doc.length != 0 ) {
+        console.log(doc);
+        res.status(200).send(doc);
+      } else {
+        res.status(200).send({message:"Nada para mostrar"});
+      }
+    })
+    .catch( err=>{
+      console.log(err)
+      res.status(400).send({message: err});
+    })
+  }
 
-  function TraerPedidosCocina(req,res,next){}
+  function TraerPedidosCocina(req,res,next){
+    PedidosEnVivoModel.aggregate([{$match: {"pedidos.cod_plato": { $gte: 205, $lte: 305 }}},
+    {$unwind: "$pedidos"},
+    {$project: {
+       "idPedido": 1,
+       "nro_mesa": 1,
+       "cliente": 1,
+       "pedidos.cod_plato": 1,
+       "pedidos.cantidad": 1,
+       "pedidos.estado": 1
+    }
+    }])
+    .then( doc =>{
+      if (doc.length != 0 ) {
+        console.log(doc);
+        res.status(200).send(doc);
+      } else {
+        res.status(200).send({message:"Nada para mostrar"});
+      }
+    })
+    .catch( err=>{
+      console.log(err)
+      res.status(400).send({message: err});
+    })
+  }
 
-  function TraerPedidosPostre(req,res,next){}
+  function TraerPedidosPostre(req,res,next){
+    PedidosEnVivoModel.aggregate([{$match: {"pedidos.cod_plato": { $gte: 400, $lte: 404 }}},
+    {$unwind: "$pedidos"},
+    {$project: {
+       "idPedido": 1,
+       "nro_mesa": 1,
+       "cliente": 1,
+       "pedidos.cod_plato": 1,
+       "pedidos.cantidad": 1,
+       "pedidos.estado": 1
+    }
+    }])
+    .then( doc =>{
+      if (doc.length != 0 ) {
+        console.log(doc);
+        res.status(200).send(doc);
+      } else {
+        res.status(200).send({message:"Nada para mostrar"});
+      }
+    })
+    .catch( err=>{
+      console.log(err)
+      res.status(400).send({message: err});
+    })
+  }
 
-  function TraerPedidosPorID(req,res,next){}
+  function TraerPedidosPorID(req,res,next){
+    if (req.body.idPedido) {
+      PedidosEnVivoModel.aggregate( [{ $match: {"idPedido":{$eq: req.body.idPedido}}},
+      {$project: {
+        "nro_mesa":1,
+        "cliente": 1,
+        "idPedido": 1,
+        "pedidos": 1
+      }}])
+      .then( doc =>{
+        if (doc.length != 0) {
+          res.status(200).send(doc);
+        }
+      })
+      .catch( err=>{
+        res.status(400).send({message: err});
+      })  
+    } else {
+      res.status(200).send({message: "Debe proporcionar un id de pedido."})
+    }
+    
+  }
 
   function PedidosParaCuenta(req,res,next){}
 
