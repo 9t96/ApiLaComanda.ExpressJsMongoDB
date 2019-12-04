@@ -23,7 +23,7 @@ router.post('/sumarvendido',SumarVendido);
   //authuser
   router.get('/traerpedidosxid',TraerPedidosPorID);
   //authadmin
-  router.get('/pedidosparacuenta',PedidosParaCuenta);
+  router.post('/pedidosparacuenta',PedidosParaCuenta);
   
   //------------------------ESTADO DE PEDIDOS----------------
   //authempleado
@@ -71,7 +71,24 @@ router.post('/sumarvendido',SumarVendido);
     }
   }
 
-  function SumarVendido(req,res,next){}
+  function SumarVendido(req,res,next){
+    if (req.body) {
+        PlatosModel.updateOne({"cod_plato": req.body.platos.cod_plato},
+        {$inc: {"cant_ventas": req.body.platos.cantidad}})
+        .then( doc=>{
+          if (doc.nModified == 1) {
+            res.status(200).send({isSucces: true, message: "Se actualizo correctamente."});
+          } else {
+            res.status(200).send({isSucces: false, message: "Error al actulizar el dato."});
+          }
+        })
+        .catch(err=>{
+          res.status(400).send({isSucces: false,message: "Error al procesar la solicitud."});
+        })
+    }
+    else
+      req.status(400).send({isSucces: false, message: "La solicitud esta vacia."})
+  }
 
   function TraerPedidos(req,res,next){
     PedidosEnVivoModel.find()
@@ -216,7 +233,24 @@ router.post('/sumarvendido',SumarVendido);
   }
 
   //Trae todos los pedidos de X mesa.
-  function PedidosParaCuenta(req,res,next){}
+  function PedidosParaCuenta(req,res,next){
+    if (req.body.nro_mesa) {
+      PedidosEnVivoModel.findOne({"nro_mesa": req.body.nro_mesa})
+      .then( doc =>{
+        if (doc.length != 0) {
+          res.status(200).send(doc);
+        }
+        else{
+          res.status(200).send({message: "No hay registros para mostrar"});
+        }
+      })
+      .catch(err =>{
+        res.status(400).send({message: "", error: err});
+      })
+    } else {
+      res.status(400).send({message: "Empty nro_mesa"});
+    }
+  }
 
   function PreparandoPedido(req,res,next){
     PedidosEnVivoModel.updateOne({ "idPedido": req.body.idPedido, "pedidos.cod_plato": req.body.cod_plato},
