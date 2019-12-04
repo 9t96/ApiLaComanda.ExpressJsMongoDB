@@ -2,15 +2,16 @@ var express = require('express');
 var router = express.Router();
 const UsersModel = require('../src/models/usuarios');
 const MesasModel = require('../src/models/mesas');
+const MWAuth = require('./Middlewares/roleauthorizationMW');
 
-router.post('/altaempleados',AltaEmpleado);
-router.get('/traerempleados',TraerEmpleados);
-router.post('/suspempleado',SuspenderEmpleado);
-router.post('/reincorporaremp',ReincorporarEmpleado);
-router.post('/eliminarempleado',EliminarEmpleado);
-router.get('/traerlogins',TraerEntradaYSalida);
-router.get('/totalxsector',TotalXSector); 
-router.get('/operacionesxempleado',OperacionesXEmpleados);
+router.post('/altaempleados', MWAuth.VerificarAdmin,AltaEmpleado);
+router.get('/traerempleados', MWAuth.VerificarAdmin,TraerEmpleados);
+router.post('/suspempleado', MWAuth.VerificarAdmin,SuspenderEmpleado);
+router.post('/reincorporaremp', MWAuth.VerificarAdmin,ReincorporarEmpleado);
+router.post('/eliminarempleado', MWAuth.VerificarAdmin,EliminarEmpleado);
+router.get('/traerlogins', MWAuth.VerificarAdmin,TraerEntradaYSalida);
+router.get('/totalxsector', MWAuth.VerificarAdmin,TotalXSector); 
+router.get('/operacionesxempleado', MWAuth.VerificarAdmin,OperacionesXEmpleados);
 
 function AltaEmpleado(req,res,next)
 {
