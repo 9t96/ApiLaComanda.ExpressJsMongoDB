@@ -4,40 +4,28 @@ const PedidosEnVivoModel = require('../src/models/pedidoenvivo');
 const PlatosModel = require('../src/models/platos');
 const RolesMW = require('./Middlewares/roleauthorizationMW');
 //------------------------AGREGAR PEDIDOS----------------
-//mwmesaabrirmesa y authmozo
-router.post('/nuevopedido',NuevoPedido);
-  //authmozoo
-router.post('/sumarvendido',SumarVendido);
+//mwmesaabrirmesa
+router.post('/nuevopedido',NuevoPedido, RolesMW.VerificarMozo);
+router.post('/sumarvendido',SumarVendido, RolesMW.VerificarMozo);
   
   //------------------------GET PEDIDOS----------------
-  //authempleado
-  router.get('/traerpedidos',TraerPedidos);
-  //authempleadolinea
-  router.get('/traerpedidoscerveza',TraerPedidosCerveza);
-  //authempleadolinea
-  router.get('/traerpedidosbartender',TraerPedidosBarra);
-  //authempleadolinea
-  router.get('/traerpedidoscocina',TraerPedidosCocina);
-  //authempleadolinea
-  router.get('/traerpedidospostre',TraerPedidosPostre);
-  //authuser
-  router.get('/traerpedidosxid',TraerPedidosPorID);
-  //authadmin
-  router.post('/pedidosparacuenta',PedidosParaCuenta);
+  router.get('/traerpedidos',TraerPedidos, RolesMW.VerificarEmpleado);
+  router.get('/traerpedidoscerveza',TraerPedidosCerveza, RolesMW.VerificarEmpleadoLinea);
+  router.get('/traerpedidosbartender',TraerPedidosBarra, RolesMW.VerificarEmpleadoLinea);
+  router.get('/traerpedidoscocina',TraerPedidosCocina, RolesMW.VerificarEmpleadoLinea);
+  router.get('/traerpedidospostre',TraerPedidosPostre, RolesMW.VerificarEmpleadoLinea);
+  router.get('/traerpedidosxid',TraerPedidosPorID, RolesMW.VerificarUsuario);
+  router.post('/pedidosparacuenta',PedidosParaCuenta, RolesMW.VerificarAdmin);
   
   //------------------------ESTADO DE PEDIDOS----------------
-  //authempleado
-  router.post('/preparando',PreparandoPedido);
+  router.post('/preparando',PreparandoPedido, RolesMW.VerificarEmpleado);
   //authempleadolinea sumar operacion
-  router.post('/listoparaservir',ListoParaServir);
+  router.post('/listoparaservir',ListoParaServir, RolesMW.VerificarEmpleadoLinea);
   //authempleadolinea sumar operacion
-  router.post('/clientescomiendo',ClientesComiendo);
-  //authadmin
-  router.get('/statsplatos',TraerStatPlatos);
-  //autheadmin
-  router.post('/removerpedido',RemoverPedido);
-  //autheuser
-  router.post('/cancelarpedido',CancelarPedido);
+  router.post('/clientescomiendo',ClientesComiendo, RolesMW.VerificarEmpleadoLinea);
+  router.get('/statsplatos',TraerStatPlatos, RolesMW.VerificarAdmin);
+  router.post('/removerpedido',RemoverPedido, RolesMW.VerificarAdmin);
+  router.post('/cancelarpedido',CancelarPedido, RolesMW.VerificarUsuario);
 
   function NuevoPedido(req,res,next){
     if(req.body){

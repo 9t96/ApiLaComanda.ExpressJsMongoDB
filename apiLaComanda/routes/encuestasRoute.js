@@ -24,29 +24,36 @@ function AltaEncuesta(req,res,next)
   
     encuesta.save()
     .then(doc => {
-      res.status(200).send(doc);
+      res.status(200).send({isSucess: true, message: "Encuesta guardada con exito."});
     })
     .catch(err =>{
-      res.status(204).send({message:err});
+      res.status(204).send({isSucess: false,message:err});
     })
   }
-  res.status(400).send({message:"Nada para guardar."})
+  else{
+    res.status(400).send({isSuccess: false,message:"Nada para guardar."})
+  }
+  
 }
 
   function AltaEncuestaPendiente(req,res,next)
   {
-    let nuevaEncuesta = new EncuestaFuturasModel({
-      cod_user: req.body.usuario,
-      mesa: req.body.mesa
-    })
-
-    nuevaEncuesta.save()
-    .then(doc =>{
-      res.status(200).send();
-    })
-    .catch(err =>{
-      res.status(204).send({message:err});
-    })
+    if (req.body) {
+      let nuevaEncuesta = new EncuestaFuturasModel({
+        cod_user: req.body.usuario,
+        mesa: req.body.mesa
+      })
+  
+      nuevaEncuesta.save()
+      .then(doc =>{
+        res.status(200).send({isSuccess: true, message: "Se guardo la encuesta con exito."});
+      })
+      .catch(err =>{
+        res.status(204).send({isSuccess: false,message:err});
+      })
+    } else {
+      res.send(400).send()
+    }
   }
 
   function BuscarEncuestaPendiente(res,res,next)
@@ -58,10 +65,10 @@ function AltaEncuesta(req,res,next)
           res.status(200).send(record);  
         }
         else
-          res.status(204).send({message:"nada para mostrar"});
+          res.status(204).send({isSuccess: false,message:"Nada para mostrar"});
       })
       .catch(err => {
-        res.status(204).send({message:err});
+        res.status(204).send({isSuccess: false,message:err});
       })
     }
   }
@@ -84,10 +91,10 @@ function AltaEncuesta(req,res,next)
         res.status(200).send(doc);
       }
       else
-        res.status(204).send({message:"nada para mostrar"});
+        res.status(204).send({isSuccess:true,message:"nada para mostrar"});
     })
     .catch(err => {
-      res.status(404).send(err);
+      res.status(404).send({isSuccess:false,error: err});
     })
   }
 
@@ -108,10 +115,10 @@ function AltaEncuesta(req,res,next)
             res.status(200).send(doc);
           }
           else
-            res.status(204).send({message:"Nada para mostrar"});
+            res.status(204).send({isSuccess: true,message:"Nada para mostrar"});
         })
         .catch(err => {
-          res.status(404).send({message:err});
+          res.status(404).send({isSuccess: false,message:err});
         })
   }
   module.exports = router;

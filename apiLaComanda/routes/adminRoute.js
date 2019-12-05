@@ -21,7 +21,7 @@ function AltaEmpleado(req,res,next)
             apellido: req.body.apellido,
             user: req.body.user,
             pass:req.body.pass,
-            tipo_usuario: req.body.tipo,
+            tipo_usuario: req.body.tipo_usuario,
             estado: req.body.estado,
             //cod_emp: req.body.cod_emp,
             rol:req.body.rol,
@@ -30,11 +30,14 @@ function AltaEmpleado(req,res,next)
 
         empleado.save()
         .then(doc => {
-            res.status(200).send();
+            res.status(200).send({isSuccess:true, message: "Se agrego el usuario con exito."});
         })
         .catch(err=>{
             res.status(204).send({message:err});        
         })
+    }
+    else{
+        res.status(200).send({isSuccess: false, message: "Debe proporcionar un usario"});
     }
 }
 
@@ -45,7 +48,7 @@ function TraerEmpleados(req,res,next)
         res.status(200).send(data);
     })
     .catch(err =>{
-        res.send(204).send({message:err});
+        res.send(204).send({isSuccess:false,message:err});
     })
 }
 
@@ -55,11 +58,11 @@ function SuspenderEmpleado(req,res,next)
         UsersModel.update({cod_emp:req.body.cod_emp}, {$set:{estado:2}})
         .then(doc =>{
             if (doc.nModified == 1) {
-                res.status(200).send({message:"succesfull"});
+                res.status(200).send({isSuccess:true, message:"Se suspendio al usuario con exito."});
             }
         })
         .catch(err=>{
-            res.send(204).send({message:err});
+            res.send(204).send({isSuccess:false, message:"Ha ocurrio un error", error: err});
         })
     }
 }
@@ -70,12 +73,15 @@ function ReincorporarEmpleado(req,res,next)
         UsersModel.update({cod_emp:req.body.cod_emp}, {$set:{estado:1}})
         .then(doc =>{
             if (doc.nModified == 1) {
-                res.status(200).send({message:"succesfull"});
+                res.status(200).send({isSuccess: true,message:"Se reincorporo el empleado."});
             }
         })
         .catch(err=>{
-            res.send(204).send({message:err});
+            res.status(204).send({isSuccess: false, message:"Ha ocurrido un error", error: err});
         })
+    }
+    else{
+        res.status(400).send({isSuccess:false, message: "No pudo procesar la solicutd"});
     }
 }
 
@@ -84,12 +90,15 @@ function EliminarEmpleado(req,res,next){
         UsersModel.update({cod_emp:req.body.cod_emp}, {$set:{estado:3}})
         .then(doc =>{
             if (doc.nModified == 1) {
-                res.status(200).send({message:"succesfull"});
+                res.status(200).send({isSuccess:true,message:"Se elimino el empleado con exito."});
             }
         })
         .catch(err=>{
-            res.send(204).send({message:err});
+            res.status(204).send({isSuccess:false,message:err});
         })
+    }
+    else{
+        res.status(200).send({isSuccess: false, message:"No se pudo procesar la solicitud"});
     }
 }
 
@@ -101,10 +110,10 @@ function TraerEntradaYSalida(req,res,next)
             res.status(200).send(doc);
         }
         else    
-            res.status(200).send({message:"no hay registros"});
+            res.status(200).send({isSuccess:true,message:"Nada para mostrar"});
     })
     .catch(err =>{
-        res.status(204).send({message:err});
+        res.status(204).send({isSuccess:false,message:err});
     })
 }
 
@@ -118,10 +127,10 @@ function TotalXSector(req,res,next)
         if(doc.length !== 0)
             res.status(200).send(doc);
         else
-            res.status(200).send({message:"nada para mostrar"})
+            res.status(200).send({isSuccess: true,message:"nada para mostrar"})
     })
     .catch(err => {
-        res.status(204).send({message:err});
+        res.status(204).send({isSuccess:false,message:err});
     })
 }
 
@@ -136,10 +145,14 @@ function OperacionesXEmpleados(req,res,next)
     }}])
     .then(doc=>{
         console.log(doc);
-        res.status(200).send(doc);
+        if (doc.length !== 0) {
+            res.status(200).send(doc);
+        } else {
+            res.status(200).send({isSuccess: true, message: "Nada para mostrar"});
+        }
     })
     .catch(err=>{
-        res.status(204).send({message:err});
+        res.status(204).send({isSuccess:false,message:err});
     })
 }
 module.exports = router;
